@@ -1,0 +1,11 @@
+#!/bin/bash
+
+function SeleccionarHistorico() {
+
+fichero=$1
+
+HISTFILE=$fichero
+
+export HISTFILE
+
+}

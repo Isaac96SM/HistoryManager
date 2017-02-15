@@ -1,0 +1,64 @@
+#!/bin/bash
+
+clear
+echo =======================
+echo ======== MHIST ========
+echo =======================
+echo 1. Seleccionar Histórico
+echo 2. Gestión de Históricos
+echo 3. Información
+echo 4. Salir
+read -p "Seleccione una opción: " opcion
+let opcion=$opcion
+
+if [ $opcion -eq 1 ]; then
+    #Cambiar HISTFILE
+    source ~/.History/Functions/SeleccionarHistorico
+    ls ~/.History/Histories -1 | cat -n > ~/.History/Temp/ls.temp
+    wc -l ~/.History/Temp/ls.temp > ~/.History/Temp/length.temp
+    let count=`cut -d' ' -f1 ~/.History/Temp/length.temp`
+    cat ~/.History/Temp/ls.temp
+    read -p "Seleccione un directorio: " dir
+    let dir=$dir
+    if [ $dir -gt 0 ] && [ $dir -le $count ]; then
+        head -$dir ~/.History/Temp/ls.temp | tail -1 > ~/.History/Temp/select.temp
+        dirselected=`cut -f2 ~/.History/Temp/select.temp`
+        ls ~/.History/Histories/${dirselected} -1 | cat -n > ~/.History/Temp/ls.temp
+        wc -l ~/.History/Temp/ls.temp > ~/.History/Temp/length.temp
+        let count=`cut -d' ' -f1 ~/.History/Temp/length.temp`
+        cat ~/.History/Temp/ls.temp
+        read -p "Seleccione un histórico: " hist
+        let hist=$hist
+        if [ $hist -gt 0 ] && [ $hist -le $count ]; then
+            head -$dir ~/.History/Temp/ls.temp | tail -1 > ~/.History/Temp/select.temp
+            histselected=`cut -f2 ~/.History/Temp/select.temp`
+            SeleccionarHistorico ~/.History/Histories/${dirselected}/${histselected}
+            rm ~/.History/Temp/ls.temp
+            rm ~/.History/Temp/length.temp
+            rm ~/.History/Temp/select.temp
+        else
+            rm ~/.History/Temp/ls.temp
+            rm ~/.History/Temp/length.temp
+            rm ~/.History/Temp/select.temp
+            clear
+            echo "Histórico incorrecto."
+        fi
+    else
+        rm ~/.History/Temp/ls.temp
+        rm ~/.History/Temp/length.temp
+        clear
+        echo "directorio incorrecto."
+    fi
+elif [ $opcion -eq 2 ]; then
+    #Gestión históricos
+    echo 'Histories'
+elif [ $opcion -eq 3 ]; then
+    #Estadísticas
+    echo 'Estadísticas'
+elif [ $opcion -eq 4 ]; then
+    #Salir
+else
+    #Input incorrecto
+    clear
+    ~/.History/Scripts/exec
+fi

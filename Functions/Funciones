@@ -1,0 +1,31 @@
+#!/bin/bash
+
+function SeleccionarHistorico() {
+
+fichero=$1
+
+HISTFILE=$fichero
+
+export HISTFILE
+
+}
+
+function ListarHistoricos(){
+    head -$dir ~/.History/Temp/ls.temp | tail -1 > ~/.History/Temp/select.temp
+    dirselected=`cut -f2 ~/.History/Temp/select.temp`
+    ls ~/.History/Histories/${dirselected} -1 | cat -n > ~/.History/Temp/ls.temp
+    wc -l ~/.History/Temp/ls.temp > ~/.History/Temp/length.temp
+    export let count=`cut -d' ' -f1 ~/.History/Temp/length.temp`
+    cat ~/.History/Temp/ls.temp
+    read -p "Seleccione un histórico: " hist
+    export let hist=$hist
+}
+
+function ListarDirectorios(){
+    ls ~/.History/Histories -1 | cat -n > ~/.History/Temp/ls.temp
+    wc -l ~/.History/Temp/ls.temp > ~/.History/Temp/length.temp
+    export let count=`cut -d' ' -f1 ~/.History/Temp/length.temp`
+    cat ~/.History/Temp/ls.temp
+    read -p "Seleccione un directorio: " dir
+    export let dir=$dir
+}

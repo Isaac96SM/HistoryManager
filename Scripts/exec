@@ -39,15 +39,18 @@ if [ $opcion -eq 1 ]; then
     fi
 elif [ $opcion -eq 2 ]; then
     #Gestión históricos
-    echo 'Histories'
+    . ~/.History/Scripts/manage
 elif [ $opcion -eq 3 ]; then
     #Estadísticas
-    echo 'Estadísticas'
+    . ~/.History/Scripts/info
 elif [ $opcion -eq 4 ]; then
     #Salir
-    echo 'Salir'
+    clear
+    #Hay que comprobar si tiene el historico por defecto 
+    #para pedirle al acabar si quiere guardarlo como uno nuevo.
+    echo 'Hasta pronto'
 else
     #Input incorrecto
     clear
-    ~/.History/Scripts/exec
+    . ~/.History/Scripts/exec
 fi

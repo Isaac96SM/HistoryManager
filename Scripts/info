@@ -1,0 +1,30 @@
+#!/bin/bash
+
+clear
+echo ===========================================
+echo ======== Información de Históricos ========
+echo ===========================================
+echo 1. Ordenes mas utilizadas
+echo 2. Porcentaje de órdenes
+echo 3. Lineas de comando
+echo 4. Volver
+read -p "Seleccione una opción: " opcion
+let opcion=$opcion
+
+if [ $opcion -eq 1 ]; then
+    #Top
+    echo 'Mas usadas'
+elif [ $opcion -eq 2 ]; then
+    #Porcentaje
+    echo 'Porcentaje'
+elif [ $opcion -eq 3 ]; then
+    #Comandos
+    echo 'Comandos'
+elif [ $opcion -eq 4 ]; then
+    #Volver al menú principal
+    . ~/.History/Scripts/exec
+else
+    #Input incorrecto
+    clear
+    . ~/.History/Scripts/info
+fi

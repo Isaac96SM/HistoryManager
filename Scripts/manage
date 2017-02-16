@@ -1,0 +1,38 @@
+#!/bin/bash
+
+clear
+echo =======================================
+echo ======== Gestión de Históricos ========
+echo =======================================
+echo 1. Nuevo Histórico
+echo 2. Guardar Histórico
+echo 3. Eliminar Históricos
+echo 4. Desglosar Histórico
+echo 5. Fusionar Históricos
+echo 6. Volver
+read -p "Seleccione una opción: " opcion
+let opcion=$opcion
+
+if [ $opcion -eq 1 ]; then
+    #Nuevo Histórico
+    echo 'Nuevo'
+elif [ $opcion -eq 2 ]; then
+    #Guardar Histórico activo (solo si no esta guardado ya)
+    echo 'Guardar'
+elif [ $opcion -eq 3 ]; then
+    #Eiminar Históricos
+    echo 'Eliminar'
+elif [ $opcion -eq 4 ]; then
+    #Desglosar por orden
+    echo 'Desglosar'
+elif [ $opcion -eq 5 ]; then
+    #Fusionar Históricos
+    echo 'Fusionar'
+elif [ $opcion -eq 6 ]; then
+    #Volver al menú principal
+    . ~/.History/Scripts/exec
+else
+    #Input incorrecto
+    clear
+    . ~/.History/Scripts/manage
+fi

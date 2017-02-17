@@ -1,56 +1,33 @@
 #!/bin/bash
 . ~/.History/Functions/Funciones
 
-clear
-echo =======================
-echo ======== MHIST ========
-echo =======================
-echo 1. Seleccionar Histórico
-echo 2. Gestión de Históricos
-echo 3. Información
-echo 4. Salir
-read -p "Seleccione una opción: " opcion
-let opcion=$opcion
+array=('Seleccionar Histórico' 'Gestión de Históricos' 'Información' 'Salir')
+opcion=$(zenity --entry --title "MHIST" --text "Seleccione una opción." "${array[@]}")
 
-if [ $opcion -eq 1 ]; then
+if [ "$opcion" == "Seleccionar Histórico" ]; then
     #Cambiar HISTFILE
-    ListarDirectorios
-    if [ $dir -gt 0 ] && [ $dir -le $count ]; then
-        ListarHistoricos
-        if [ $hist -gt 0 ] && [ $hist -le $count ]; then
-            head -$dir ~/.History/Temp/ls.temp | tail -1 > ~/.History/Temp/select.temp
-            histselected=`cut -f2 ~/.History/Temp/select.temp`
-            SeleccionarHistorico ~/.History/Histories/${dirselected}/${histselected}
-            rm ~/.History/Temp/ls.temp
-            rm ~/.History/Temp/length.temp
-            rm ~/.History/Temp/select.temp
+    dir=`ls ~/.History/Histories | zenity --list --column "Seleccione Directorio"`
+    if [ $dir != "" ]; then
+        hist=`ls ~/.History/Histories/${dir} | zenity --list --column "Seleccione Histórico"`
+        if [ $hist != "" ]; then
+            SeleccionarHistorico ~/.History/Histories/${dir}/${hist}
         else
-            rm ~/.History/Temp/ls.temp
-            rm ~/.History/Temp/length.temp
-            rm ~/.History/Temp/select.temp
-            clear
-            echo "Histórico incorrecto."
+            zenity --info --text="Operación cancelada."
+            . ~/.History/Scripts/exec
         fi
     else
-        rm ~/.History/Temp/ls.temp
-        rm ~/.History/Temp/length.temp
-        #clear
-        echo "directorio incorrecto."
+        zenity --info --text="Operación cancelada."
+        . ~/.History/Scripts/exec
     fi
-elif [ $opcion -eq 2 ]; then
+elif [ "$opcion" == "Gestión de Históricos" ]; then
     #Gestión históricos
     . ~/.History/Scripts/manage
-elif [ $opcion -eq 3 ]; then
+elif [ "$opcion" == "Información" ]; then
     #Estadísticas
     . ~/.History/Scripts/info
-elif [ $opcion -eq 4 ]; then
+elif [ "$opcion" == "Salir" ] || [ "$opcion" == "" ]; then
     #Salir
-    clear
+    zenity --info --text="Hasta pronto."
     #Hay que comprobar si tiene el historico por defecto 
     #para pedirle al acabar si quiere guardarlo como uno nuevo.
-    echo 'Hasta pronto'
-else
-    #Input incorrecto
-    clear
-    . ~/.History/Scripts/exec
 fi

@@ -65,3 +65,5 @@ set | more
 clea
 clear
 mhist
+mhist
+set | more

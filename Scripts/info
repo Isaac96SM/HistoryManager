@@ -1,6 +1,6 @@
 #!/bin/bash
 
-array=('Ordenes mas utilizadas' 'Porcentaje de órdenes' 'Lineas de comando' 'Volver')
+array=('Ordenes mas utilizadas' 'Porcentaje de órdenes' 'Volver')
 opcion=$(zenity --entry --title "Información de Históricos" --text "Seleccione una opción." "${array[@]}")
 
 if [ "$opcion" == "Ordenes mas utilizadas" ]; then
@@ -9,10 +9,7 @@ if [ "$opcion" == "Ordenes mas utilizadas" ]; then
 elif [ "$opcion" == "Porcentaje de órdenes" ]; then
     #Porcentaje
     echo 'Porcentaje'
-elif [ "$opcion" == "Lineas de comando" ]; then
-    #Comandos
-    echo 'Comandos'
 elif [ "$opcion" == "Volver" ] || [ "$opcion" == "" ]; then
     #Volver al menú principal
-    . ~/.History/Scripts/exec
+    . ${HOME}/.History/Scripts/exec
 fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Volver')
+array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
 opcion=$(zenity --entry --title "Gestión de Históricos" --text "Seleccione una opción." "${array[@]}")
 
 if [ "$opcion" == "Nuevo Histórico" ]; then
@@ -18,7 +18,28 @@ elif [ "$opcion" == "Desglosar Histórico" ]; then
 elif [ "$opcion" == "Fusionar Histórico" ]; then
     #Fusionar Históricos
     echo 'Fusionar'
+elif [ "$opcion" == "Importar/Exportar" ]; then
+    #Importar/Exportar
+    opcion=$(zenity --entry --title "Importar/Exportar" --text "Que acción desea realizar" "Importar" "Exportar")
+    if [ "$opcion" == "Importar" ]; then
+        #Importar
+        hist=`zenity --file-selection --filename=${HOME}/ --title="Select a File"`
+        if [ $hist != "" ]; then
+            Importar $hist
+            zenity --info --text="${resultado}"
+        fi
+    elif [ "$opcion" == "Exportar" ]; then
+        #Exportar
+        ElegirHistorico
+        if [ $hist != "" ]; then
+            Exportar $dir $hist
+            zenity --info --text="${resultado}"
+        fi
+    else
+        #Volver al menú principal
+    . ${HOME}/.History/Scripts/exec
+    fi
 elif [ "$opcion" == "Volver" ] || [ "$opcion" == "" ]; then
     #Volver al menú principal
-    . ~/.History/Scripts/exec
+    . ${HOME}/.History/Scripts/exec
 fi

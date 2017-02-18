@@ -1,13 +1,70 @@
 #!/bin/bash
 
 function SeleccionarHistorico() {
+    fichero=$1
 
-fichero=$1
+    if [ -e $fichero ]; then
+        HISTFILE=$fichero
 
-if [ -e $fichero ]; then
-    HISTFILE=$fichero
+        export HISTFILE
+    fi
+}
 
-    export HISTFILE
-fi
+function ElegirHistorico() {
+    dir=`ls ~/.History/Histories | zenity --list --column "Seleccione Directorio"`
+    if [ $dir != "" ]; then
+        hist=`ls ~/.History/Histories/${dir} | zenity --list --column "Seleccione Histórico"`
+    else
+        zenity --info --text="Operación cancelada."
+        . ${HOME}/.History/Scripts/exec
+    fi
+}
 
+function Importar() {
+    rutaorigen=$1
+    ficherooriginal=$(basename "$rutaorigen")
+    fichero=$ficherooriginal
+    rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
+
+    if [ -e $rutaorigen ]; then
+        let count=0
+        while [ -e $rutadestino ]
+        do
+            let count=${count}+1
+            fichero=${ficherooriginal}"${count}"
+            rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
+        done
+        cp $rutaorigen $rutadestino
+        if [ $? -eq 0 ]; then
+            resultado="Fichero importado al directorio Custom con el nombre: ${fichero}"
+        else
+            resultado='Algo salio mal y no se pudo realizar la importación'
+        fi
+    fi
+}
+
+function Exportar() {
+    dir=$1
+    hist=$2
+    rutaorigen="${HOME}/.History/Histories/${dir}/${hist}"
+    ficherooriginal=$(basename "$rutaorigen")
+    fichero=$ficherooriginal
+    dirdestino=`zenity --file-selection --directory --filename=${HOME}/ --title="Seleccione Directorio de destino"`
+    rutadestino="${dirdestino}/${fichero}"
+
+    if [ -e $rutaorigen ]; then
+        let count=0
+        while [ -e $rutadestino ]
+        do
+            let count=${count}+1
+            fichero=${ficherooriginal}"${count}"
+            rutadestino="${dirdestino}/${fichero}"
+        done
+        cp $rutaorigen $rutadestino
+        if [ $? -eq 0 ]; then
+            resultado="Histórico exportado al directorio ${dirdestino} con el nombre: ${fichero}"
+        else
+            resultado='Algo salio mal y no se pudo realizar la exportación'
+        fi
+    fi
 }

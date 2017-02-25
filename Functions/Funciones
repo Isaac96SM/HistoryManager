@@ -13,10 +13,29 @@ function SeleccionarHistorico() {
 function ElegirHistorico() {
     dir=`ls ~/.History/Histories | zenity --list --column "Seleccione Directorio"`
     if [ $dir != "" ]; then
-        hist=`ls ~/.History/Histories/${dir} | zenity --list --column "Seleccione Histórico"`
+        hist=`ls ${HOME}/.History/Histories/${dir} | zenity --list --column "Seleccione Histórico"`
     else
         zenity --info --text="Operación cancelada."
         . ${HOME}/.History/Scripts/exec
+    fi
+}
+
+function GuardarSinRepetir() {
+    rutaorigen=$1
+    rutadestino=$2
+    ficherooriginal=$3
+    let count=0
+    while [ -e $rutadestino ]
+    do
+        let count=${count}+1
+        fichero=${ficherooriginal}"${count}"
+        rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
+    done
+    cp $rutaorigen $rutadestino
+    if [ $? -eq 0 ]; then
+        exito=true
+    else
+        exito=false
     fi
 }
 
@@ -27,15 +46,8 @@ function Importar() {
     rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
 
     if [ -e $rutaorigen ]; then
-        let count=0
-        while [ -e $rutadestino ]
-        do
-            let count=${count}+1
-            fichero=${ficherooriginal}"${count}"
-            rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
-        done
-        cp $rutaorigen $rutadestino
-        if [ $? -eq 0 ]; then
+        GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
+        if [ $exito == true ]; then
             resultado="Fichero importado al directorio Custom con el nombre: ${fichero}"
         else
             resultado='Algo salio mal y no se pudo realizar la importación'
@@ -53,18 +65,42 @@ function Exportar() {
     rutadestino="${dirdestino}/${fichero}"
 
     if [ -e $rutaorigen ]; then
-        let count=0
-        while [ -e $rutadestino ]
-        do
-            let count=${count}+1
-            fichero=${ficherooriginal}"${count}"
-            rutadestino="${dirdestino}/${fichero}"
-        done
-        cp $rutaorigen $rutadestino
-        if [ $? -eq 0 ]; then
+        GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
+        if [ $exito == true ]; then
             resultado="Histórico exportado al directorio ${dirdestino} con el nombre: ${fichero}"
         else
             resultado='Algo salio mal y no se pudo realizar la exportación'
         fi
+    fi
+}
+
+function DesglosarHistorico() {
+    dir=$1
+    hist=$2
+    orden=$3
+    ruta="${HOME}/.History/Histories/${dir}/${hist}"
+    cat $ruta | grep "${orden}" > ${HOME}/.History/Temp/desglose.temp
+    vacio=false
+    contador="1"
+    while [ $vacio == false ]
+    do
+        linea=`awk 'NR==${contador}' ${HOME}/.History/Temp/desglose.Temp`
+        if [ $linea != "" ]; then
+            let contador=${contador}+1
+            contador="${contador}"
+        else
+            vacio=true
+        fi
+    done
+    if zenity --text-info \
+    --title="Desglose de ${contador} lineas" \
+    --filename=${HOME}/.History/Temp/desglose.Temp \
+    --checkbox="Guardar como historico."
+    then
+        #Meter logica de guardar el temporal como "date.orden" en el directorio Command
+
+        resultado="Histórico guardado como: ${fichero}"
+    else
+        resultado="Histórico no guadado"
     fi
 }

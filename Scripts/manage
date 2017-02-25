@@ -14,7 +14,17 @@ elif [ "$opcion" == "Eiminar Históricos" ]; then
     echo 'Eliminar'
 elif [ "$opcion" == "Desglosar Histórico" ]; then
     #Desglosar por orden
-    echo 'Desglosar'
+    ElegirHistorico
+        if [ $hist != "" ]; then
+            orden=$(zenity --entry --title="Desglosar histórico" --text="Escriba la orden que desea buscar:")
+            if [ $orden != "" ]; then
+                DesglosarHistorico $dir $hist $orden
+                zenity --info --text="${resultado}"
+            else 
+                zenity --error \
+                --text="No se ha especificado ninguna orden"
+            fi
+        fi
 elif [ "$opcion" == "Fusionar Histórico" ]; then
     #Fusionar Históricos
     echo 'Fusionar'
@@ -23,7 +33,7 @@ elif [ "$opcion" == "Importar/Exportar" ]; then
     opcion=$(zenity --entry --title "Importar/Exportar" --text "Que acción desea realizar" "Importar" "Exportar")
     if [ "$opcion" == "Importar" ]; then
         #Importar
-        hist=`zenity --file-selection --filename=${HOME}/ --title="Select a File"`
+        hist=`zenity --file-selection --filename=${HOME}/ --title="Seleccione Histórico"`
         if [ $hist != "" ]; then
             Importar $hist
             zenity --info --text="${resultado}"

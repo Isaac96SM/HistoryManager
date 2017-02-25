@@ -5,7 +5,14 @@ opcion=$(zenity --entry --title "Información de Históricos" --text "Seleccione
 
 if [ "$opcion" == "Ordenes mas utilizadas" ]; then
     #Top
-    echo 'Mas usadas'
+    ElegirHistorico
+    if [ $hist != "" ]; then
+    top5 ${HOME}/.History/Histories/${dir}/${hist}
+	else
+    zenity --info --text="Operación cancelada."
+    . ${HOME}/.History/Scripts/info
+fi
+    
 elif [ "$opcion" == "Porcentaje de órdenes" ]; then
     #Porcentaje
     echo 'Porcentaje'

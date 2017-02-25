@@ -67,3 +67,5 @@ clear
 mhist
 mhist
 set | more
+ls
+mhist

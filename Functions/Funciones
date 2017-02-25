@@ -68,3 +68,16 @@ function Exportar() {
         fi
     fi
 }
+
+function top5(){
+    declare -A reg
+
+    count=70
+    long=$(wc -l $1) #Resultado se almacena en variable
+    while [[ $count < $long ]]; do
+        cehck=false
+        linea=$(awk "NR==$count" $1)
+        echo $linea
+        let count=${count}+1   
+    done
+}

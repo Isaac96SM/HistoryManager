@@ -71,13 +71,29 @@ function Exportar() {
 
 function top5(){
     declare -A reg
+    count=1
+    long=$(wc -l $1 | cut -d' ' -f1) #Resultado se almacena en variable
+    while [ $count -le $long ]; 
+    do
+            check=false
+            linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
 
-    count=70
-    long=$(wc -l $1) #Resultado se almacena en variable
-    while [[ $count < $long ]]; do
-        cehck=false
-        linea=$(awk "NR==$count" $1)
-        echo $linea
+        for registro in "${!reg[@]}"; do #La ! es para que coja la clave y no el valor
+            if [[ $registro == $linea ]]; then
+                check=true
+            fi
+        done
+
+        if [ $check == true ]; then
+            let reg["${linea}"]="${reg[$linea]}"+1
+        else
+            let reg["${linea}"]=1
+        fi
         let count=${count}+1   
     done
+
+    for i in "${!reg[@]}"
+    do
+        printf '%s:%s\n' "$i" "${reg[$i]}"
+    done | sort -t : -k 2nr > 
 }

@@ -69,3 +69,11 @@ mhist
 set | more
 ls
 mhist
+bash -x exec
+mhist
+clear
+mhist
+clear
+mhist
+[B
+mhist

@@ -4,10 +4,10 @@ array=('Ordenes mas utilizadas' 'Porcentaje de órdenes' 'Volver')
 opcion=$(zenity --entry --title "Información de Históricos" --text "Seleccione una opción." "${array[@]}")
 
 if [ "$opcion" == "Ordenes mas utilizadas" ]; then
-    #Top
+    #Uso de Ordenes
     ElegirHistorico
     if [ $hist != "" ]; then
-    top5 ${HOME}/.History/Histories/${dir}/${hist}
+    UsodeOrdenes ${HOME}/.History/Histories/${dir}/${hist}
 	else
     zenity --info --text="Operación cancelada."
     . ${HOME}/.History/Scripts/info

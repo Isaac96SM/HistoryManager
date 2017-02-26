@@ -69,14 +69,14 @@ function Exportar() {
     fi
 }
 
-function top5(){
+function UsodeOrdenes(){
     declare -A reg
     count=1
     long=$(wc -l $1 | cut -d' ' -f1)
-    while [ $count -le $long ]; #Introducir o actualizar ordenes
-    do
-            check=false
-            linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
+
+    while [ $count -le $long ]; do #Introducir o actualizar ordenes
+        check=false
+        linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
 
         for registro in "${!reg[@]}"; do #Comprar si la linea actual ya esta en el array !:Clave del registro
             if [[ $registro == $linea ]]; then
@@ -89,31 +89,46 @@ function top5(){
         else
             let reg["${linea}"]=1
         fi
-        let count=${count}+1
 
+        let count=${count}+1
     done
 
-    for i in "${!reg[@]}" #Imprimir registro de mayor a menor separando valor y clave con ":"
-    do
+    for i in "${!reg[@]}"; do #Imprimir registro de mayor a menor separando valor y clave con ":"
+    
         printf '%s:%s\n' "$i" "${reg[$i]}"
     done | sort -t : -k 2nr > ${HOME}/.History/list.temp #Lo guardamos en un archivo temporal para tratarlo despues
 
+    declare -A grupos
     while read line; do #Poner todas las ordenes con el mismo valor en una linea
         orden=$(echo "$line" | cut -d':' -f1)
-        linea=$(echo "$line" | cut -d':' -f2)
+        numero=$(echo "$line" | cut -d':' -f2)
 
-        if [[ $linea == $old ]]; then            
+        if [[ $numero == $old ]]; then #Tratar la orden y su valor y meterla en un array.     
             oldord="$oldord $orden"
-            echo $oldord
+            grupos["${numero}"]="$oldord"
         else
-            old=${linea}
+            old=${numero}
             oldord=${orden}
-            echo $orden
+            grupos["${numero}"]="$oldord"
         fi
-
     done < ${HOME}/.History/list.temp
+
+    for i in "${!grupos[@]}"; do #Preparar la impresion por pantalla del uso de las ordenes
+        let n=$i
+        let count=0
+        bar=""
+
+        while [ $count -lt $n ]; #Añadir tantas "|" como veces aparezca la orden
+        do
+            bar="${bar}|"
+            let count=$count+1
+        done
+
+        echo "$i ${grupos[$i]}: $bar"
+    done | sort -k 1nr
 
     rm ${HOME}/.History/list.temp
 }
 
 #Borrar archivo temporal
+#| sort -t : -k 1nr

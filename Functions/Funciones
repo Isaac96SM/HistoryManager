@@ -49,12 +49,12 @@ function NuevoHistorico(){
 }
 
 function GuardarHistorico(){
-    
+
     zenity --question --text "Guardar?"
     if [ $? = 0 ];then
        
-        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Custom/`date +%y-%m-%d`
-        SeleccionarHistorico ${HOME}/.History/Histories/Custom/`date +%y-%m-%d`
+        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Custom/`date +%y_%m_%d`
+        SeleccionarHistorico ${HOME}/.History/Histories/Custom/`date +%y_%m_%d`
         zenity --info --text="Historico guardado."
     else 
         rm ${HOME}/.History/.Temp/aux.temp

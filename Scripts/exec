@@ -7,7 +7,7 @@ opcion=$(zenity --entry --title "MHIST" --text "Seleccione una opción." "${arra
 if [ "$opcion" == "Seleccionar Histórico" ]; then
     #Cambiar HISTFILE
     ElegirHistorico
-        if [ $hist != "" ]; then
+        if [ "$hist" != "" ]; then
             SeleccionarHistorico ${HOME}/.History/Histories/${dir}/${hist}
         else
             zenity --info --text="Operación cancelada."

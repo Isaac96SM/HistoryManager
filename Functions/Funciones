@@ -62,18 +62,16 @@ function GuardarHistorico(){
     fi
 }
 
-#Funcion que permite elegir varios historicos de diferentes directorios y eliminarlos a la vez 
-function EliminarHistoricos() {
-
-    #Creamos un array asociativo que contenga para cada directorio seleccionado, una lista con los ficheros selecionados a borrar
+function ElegirHistoricos(){
+#Creamos un array asociativo que contenga para cada directorio seleccionado, una lista con los ficheros selecionados a borrar
     dir=`ls ~/.History/Histories | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Acceder?" --column="Directorios" --separator=" "`
     declare -A arrayHistoricos
     set $dir
 
-    while [ $1 != "" ]
+    while [ "$1" != "" ]
     do
         hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Borrar?" --column="Históricos" --separator=" "`
-        arrayHistoricos[$1]=$hist
+        arrayHistoricos[$1]="$hist"
         let count=count+1
         shift
     done
@@ -84,16 +82,43 @@ function EliminarHistoricos() {
         zenity --info --text="Operación cancelada."
         . ${HOME}/.History/Scripts/manage
     fi
+    
+    declare -a array
+    for i in "${!arrayHistoricos[@]}";
+    do  
+        split=`echo "${arrayHistoricos[$i]}" | tr ' ' ':'`
+        string=`echo "${i};$split"`
+        array+=("$string") 
+    done
+    echo "${array[@]}"
+}
 
+#Funcion que permite elegir varios historicos de diferentes directorios y eliminarlos a la vez 
+function EliminarHistoricos() {
+    
+    declare -a aux=$(ElegirHistoricos)
+    declare -A arrayBuena
+
+    for linea in ${aux[@]};
+    do
+        IFS=';' read -ra PAR <<< "$linea"
+        clave="${PAR[0]}"
+        valor="${PAR[1]}"
+        arrayBuena["${clave}"]="${valor}"
+    done
+    echo $arrayBuena
     #Bucle para borrar la lista de ficheros que hemos definido de cada directorio
-    for index in "${!arrayHistoricos[@]}"
+    for index in "${!arrayBuena[@]}"
     do
         directorio=$index
-        ficheros="${arrayHistoricos[$index]}" 
+        split=`echo "${arrayBuena[$index]}" | tr ':' ' '`
+        ficheros="$split" 
         set $ficheros
-            while [ $1 != "" ]
-            do
-                rm ${HOME}/.History/Histories/${directorio}/${1}
+            while [ "$1" != "" ]
+            do  
+                if [ -e ${HOME}/.History/Histories/${directorio}/${1} ];then
+                    rm ${HOME}/.History/Histories/${directorio}/${1}
+                fi
                 shift
             done    
     done

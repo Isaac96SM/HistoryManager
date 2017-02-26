@@ -26,7 +26,6 @@ set | more
 ls
 set 
 mhist
-1
 mhist
 set
 source mhist
@@ -75,5 +74,8 @@ clear
 mhist
 clear
 mhist
-[B
 mhist
+falso
+falso
+cierto
+cierto

@@ -72,28 +72,48 @@ function Exportar() {
 function top5(){
     declare -A reg
     count=1
-    long=$(wc -l $1 | cut -d' ' -f1) #Resultado se almacena en variable
-    while [ $count -le $long ]; 
+    long=$(wc -l $1 | cut -d' ' -f1)
+    while [ $count -le $long ]; #Introducir o actualizar ordenes
     do
             check=false
             linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
 
-        for registro in "${!reg[@]}"; do #La ! es para que coja la clave y no el valor
+        for registro in "${!reg[@]}"; do #Comprar si la linea actual ya esta en el array !:Clave del registro
             if [[ $registro == $linea ]]; then
                 check=true
             fi
         done
 
-        if [ $check == true ]; then
+        if [ $check == true ]; then #Si la linea existe en el registro sumara uno al valor, sino lo introducira como un nuevo registro
             let reg["${linea}"]="${reg[$linea]}"+1
         else
             let reg["${linea}"]=1
         fi
-        let count=${count}+1   
+        let count=${count}+1
+
     done
 
-    for i in "${!reg[@]}"
+    for i in "${!reg[@]}" #Imprimir registro de mayor a menor separando valor y clave con ":"
     do
         printf '%s:%s\n' "$i" "${reg[$i]}"
-    done | sort -t : -k 2nr > 
+    done | sort -t : -k 2nr > ${HOME}/.History/list.temp #Lo guardamos en un archivo temporal para tratarlo despues
+
+    while read line; do #Poner todas las ordenes con el mismo valor en una linea
+        orden=$(echo "$line" | cut -d':' -f1)
+        linea=$(echo "$line" | cut -d':' -f2)
+
+        if [[ $linea == $old ]]; then            
+            oldord="$oldord $orden"
+            echo $oldord
+        else
+            old=${linea}
+            oldord=${orden}
+            echo $orden
+        fi
+
+    done < ${HOME}/.History/list.temp
+
+    rm ${HOME}/.History/list.temp
 }
+
+#Borrar archivo temporal

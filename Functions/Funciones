@@ -49,17 +49,22 @@ function NuevoHistorico(){
 }
 
 function GuardarHistorico(){
-
+if [ -e ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` ];then
+      cat ${HOME}/.History/.Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
+      rm ${HOME}/.History/.Temp/aux.temp
+      zenity --info --text "Historico Actualizado!" 
+else
     zenity --question --text "Guardar?"
     if [ $? = 0 ];then
        
-        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Custom/`date +%y_%m_%d`
-        SeleccionarHistorico ${HOME}/.History/Histories/Custom/`date +%y_%m_%d`
+        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
+        SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
         zenity --info --text="Historico guardado."
     else 
         rm ${HOME}/.History/.Temp/aux.temp
         zenity --info --text="Historico descartado."
     fi
+fi    
 }
 
 function ElegirHistoricos(){

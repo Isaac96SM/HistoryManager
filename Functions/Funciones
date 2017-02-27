@@ -331,10 +331,14 @@ function UsodeOrdenes(){
             let count=$count+1
         done
 
-        echo "$i ${grupos[$i]}: $bar"
+        echo "$i ${grupos[$i]}: $bar" >> ${HOME}/.History/result.temp
     done | sort -k 1nr
+    zenity --text-info \
+    --title="Uso de Ordenes" \
+    --filename=${HOME}/.History/result.temp \
 
     rm ${HOME}/.History/list.temp
+    rm ${HOME}/.History/result.temp
 }
 
 #Isaac

@@ -25,7 +25,7 @@ elif [ "$opcion" == "Desglosar Histórico" ]; then
                 --text="No se ha especificado ninguna orden"
             fi
         fi
-elif [ "$opcion" == "Fusionar Histórico" ]; then
+elif [ "$opcion" == "Fusionar Históricos" ]; then
     #Fusionar Históricos
     FusionarHistoricos
     if [ $result == true ]; then

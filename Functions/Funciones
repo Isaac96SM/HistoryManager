@@ -93,6 +93,7 @@ function ElegirHistoricos(){
     echo "${array[@]}"
 }
 
+
 #Funcion que permite elegir varios historicos de diferentes directorios y eliminarlos a la vez 
 function EliminarHistoricos() {
     
@@ -106,7 +107,7 @@ function EliminarHistoricos() {
         valor="${PAR[1]}"
         arrayBuena["${clave}"]="${valor}"
     done
-    echo $arrayBuena
+
     #Bucle para borrar la lista de ficheros que hemos definido de cada directorio
     for index in "${!arrayBuena[@]}"
     do
@@ -124,6 +125,48 @@ function EliminarHistoricos() {
     done
 } 
 
+#Funcion de Fusionar historicos
+fuction FusionarHistoricos(){
+    #Seleccion de Historicos
+    declare -a aux=$(ElegirHistoricos)
+    declare -A arrayBuena
+
+    for linea in ${aux[@]};
+    do
+        IFS=';' read -ra PAR <<< "$linea"
+        clave="${PAR[0]}"
+        valor="${PAR[1]}"
+        arrayBuena["${clave}"]="${valor}"
+    done
+    #Establecemos nombre al fichero
+    nombrehistorico=`date +%Y_%m_%d`".fusion" 
+    #Bucle para fusionar los historicos que hemos definido de cada directorio
+    for index in "${!arrayHistoricos[@]}"
+    do
+        directorio=$index
+        ficheros="${arrayHistoricos[$index]}" 
+        set $ficheros
+            while [ $1 != "" ]
+            do
+                cat ${HOME}/.History/Histories/${directorio}/${1} >> "${HOME}/.History/Histories/Dates/$nombrehistorico"
+                shift
+            done    
+    done
+    zenity --info --text="Historico fusionado correctamente con el nombre $nombrehistorico."
+
+}
+
+#Funcion de Porcentajes
+function PorcentajeOrden(){
+    ElegirHistorico
+    numderepeticiones=fgrep -o "$1" ${HOME}/.History/Histories/$dir/$hist | wc -l
+    lineastotales=wc ${HOME}/.History/Histories/$dir/$hist
+    multiplicacion=expr $numderepeticiones\*100
+    porcentajetotal=expr $multiplicacion/$lineastotales
+    zenity --info --text="El porcentaje de veces que se repite esta orden es: $porcentajetotal."
+
+}
+#Funcion para Importar 
 function Importar() {
     rutaorigen=$1
     ficherooriginal=$(basename "$rutaorigen")

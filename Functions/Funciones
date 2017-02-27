@@ -158,7 +158,6 @@ function FusionarHistoricos(){
 
 #Funcion de Porcentajes
 function PorcentajeOrden(){
-    ElegirHistorico
     numderepeticiones=fgrep -o "$1" ${HOME}/.History/Histories/$dir/$hist | wc -l
     lineastotales=wc ${HOME}/.History/Histories/$dir/$hist
     multiplicacion=expr $numderepeticiones\*100

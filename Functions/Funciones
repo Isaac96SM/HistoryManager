@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 function SeleccionarHistorico() {
     fichero=$1
@@ -19,6 +19,108 @@ function ElegirHistorico() {
         . ${HOME}/.History/Scripts/exec
     fi
 }
+
+function NuevoHistorico(){
+
+    touch ${HOME}/.History/.Temp/aux.temp
+    SeleccionarHistorico ${HOME}/.History/.Temp/aux.temp
+    bash
+
+}
+
+function GuardarHistorico(){
+    echo $SHLVL
+    zenity --question --text "Guardar?"
+    if [ $? = 0 ];then
+       
+        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Custom/`date +%y-%m-%d`
+        HISTFILE=${HOME}/.bash_history
+        zenity --info --text="Historico guardado."
+    else 
+        rm ${HOME}/.History/.Temp/aux.temp
+        zenity --info --text="Historico descartado."
+    fi
+}
+#Funcion de Porcentajes
+function PorcentajeOrden(){
+    ElegirHistorico
+    numderepeticiones=fgrep -o "$1" ${HOME}/.History/Histories/$dir/$hist | wc -l
+    lineastotales=wc ${HOME}/.History/Histories/$dir/$hist
+    multiplicacion=expr $numderepeticiones\*100
+    porcentajetotal=expr $multiplicacion/$lineastotales
+    zenity --info --text="El porcentaje de veces que se repite esta orden es: $porcentajetotal."
+
+}
+
+#Funcion de Fusionar historicos
+fuction FusionarHistoricos(){
+    #Seleccion de Historicos
+    dir=`ls ~/.History/Histories | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Acceder?" --column="Directorios" --separator=" "`
+    declare -A arrayHistoricos
+    set $dir
+
+    while [ $1 != "" ]
+    do
+        hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Fusionar?" --column="Históricos" --separator=" "`
+        arrayHistoricos[$1]=$hist
+        let count=count+1
+        shift
+    done
+    #Establecemos nombre al fichero
+    nombrehistorico=`date +%Y_%m_%d`".fusion" 
+    #Bucle para fusionar los historicos que hemos definido de cada directorio
+    for index in "${!arrayHistoricos[@]}"
+    do
+        directorio=$index
+        ficheros="${arrayHistoricos[$index]}" 
+        set $ficheros
+            while [ $1 != "" ]
+            do
+                cat ${HOME}/.History/Histories/${directorio}/${1} >> "${HOME}/.History/Histories/Dates/$nombrehistorico"
+                shift
+            done    
+    done
+    zenity --info --text="Historico fusionado correctamente con el nombre $nombrehistorico."
+
+
+}
+
+#Funcion que permite elegir varios historicos de diferentes directorios y eliminarlos a la vez 
+function EliminarHistoricos() {
+
+    #Creamos un array asociativo que contenga para cada directorio seleccionado, una lista con los ficheros selecionados a borrar
+    dir=`ls ~/.History/Histories | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Acceder?" --column="Directorios" --separator=" "`
+    declare -A arrayHistoricos
+    set $dir
+
+    while [ $1 != "" ]
+    do
+        hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Borrar?" --column="Históricos" --separator=" "`
+        arrayHistoricos[$1]=$hist
+        let count=count+1
+        shift
+    done
+    #Comprobamos que ha ido bien la seleccion de ficheros
+    if [ $? = 0 ]; then
+        zenity --info --text="Operación completada."
+    else
+        zenity --info --text="Operación cancelada."
+        . ${HOME}/.History/Scripts/manage
+    fi
+
+    #Bucle para borrar la lista de ficheros que hemos definido de cada directorio
+    for index in "${!arrayHistoricos[@]}"
+    do
+        directorio=$index
+        ficheros="${arrayHistoricos[$index]}" 
+        set $ficheros
+            while [ $1 != "" ]
+            do
+                rm ${HOME}/.History/Histories/${directorio}/${1}
+                shift
+            done    
+    done
+} 
 
 function Importar() {
     rutaorigen=$1

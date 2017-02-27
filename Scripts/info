@@ -8,7 +8,8 @@ if [ "$opcion" == "Ordenes mas utilizadas" ]; then
     echo 'Mas usadas'
 elif [ "$opcion" == "Porcentaje de órdenes" ]; then
     #Porcentaje
-    echo 'Porcentaje'
+    ordenporcentaje=$(zenity --entry --title "Orden a buscar" --text "Que orden desea buscar")
+    PorcentajeOrden $ordenporcentaje
 elif [ "$opcion" == "Volver" ] || [ "$opcion" == "" ]; then
     #Volver al menú principal
     . ${HOME}/.History/Scripts/exec

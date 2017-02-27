@@ -126,7 +126,7 @@ function EliminarHistoricos() {
 } 
 
 #Funcion de Fusionar historicos
-fuction FusionarHistoricos(){
+function FusionarHistoricos(){
     #Seleccion de Historicos
     declare -a aux=$(ElegirHistoricos)
     declare -A arrayBuena

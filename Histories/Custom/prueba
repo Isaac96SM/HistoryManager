@@ -26,7 +26,6 @@ set | more
 ls
 set 
 mhist
-1
 mhist
 set
 source mhist
@@ -68,3 +67,16 @@ clear
 mhist
 mhist
 set | more
+ls
+mhist
+bash -x exec
+mhist
+clear
+mhist
+clear
+mhist
+mhist
+falso
+falso
+cierto
+cierto

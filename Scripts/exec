@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 . ~/.History/Functions/Funciones
 
 array=('Seleccionar Histórico' 'Gestión de Históricos' 'Información' 'Salir')

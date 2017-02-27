@@ -1,17 +1,18 @@
-#!/bin/bash
+#!/bin/bash 
+. ~/.History/Functions/Funciones
 
 array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
 opcion=$(zenity --entry --title "Gestión de Históricos" --text "Seleccione una opción." "${array[@]}")
 
 if [ "$opcion" == "Nuevo Histórico" ]; then
     #Nuevo Histórico
-    echo 'Nuevo'
+    NuevoHistorico
 elif [ "$opcion" == "Guardar Histórico" ]; then
     #Guardar Histórico activo (solo si no esta guardado ya)
-    echo 'Guardar'
-elif [ "$opcion" == "Eiminar Históricos" ]; then
+    GuardarHistorico
+elif [ "$opcion" == "Eliminar Históricos" ]; then
     #Eiminar Históricos
-    echo 'Eliminar'
+    EliminarHistoricos
 elif [ "$opcion" == "Desglosar Histórico" ]; then
     #Desglosar por orden
     ElegirHistorico

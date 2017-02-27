@@ -12,7 +12,7 @@ if [ "$opcion" == "Ordenes mas utilizadas" ]; then
     zenity --info --text="Operación cancelada."
     . ${HOME}/.History/Scripts/info
 fi
-    
+
 elif [ "$opcion" == "Porcentaje de órden" ]; then
     #Porcentaje
     ElegirHistorico

@@ -1,5 +1,4 @@
 #!/bin/bash 
-. ~/.History/Functions/Funciones
 
 array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
 opcion=$(zenity --entry --title "Gestión de Históricos" --text "Seleccione una opción." "${array[@]}")
@@ -28,7 +27,12 @@ elif [ "$opcion" == "Desglosar Histórico" ]; then
         fi
 elif [ "$opcion" == "Fusionar Histórico" ]; then
     #Fusionar Históricos
-    echo 'Fusionar'
+    FusionarHistoricos
+    if [ $result == true ]; then
+        zenity --info --text="Histórico fusionado correctamente con el nombre $nombrehistorico."
+    else   
+        zenity --error --text="El histórico no se creo o se creo parcialmente."
+    fi
 elif [ "$opcion" == "Importar/Exportar" ]; then
     #Importar/Exportar
     opcion=$(zenity --entry --title "Importar/Exportar" --text "Que acción desea realizar" "Importar" "Exportar")

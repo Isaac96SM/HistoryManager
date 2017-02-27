@@ -1,5 +1,5 @@
 #!/bin/bash 
-. ~/.History/Functions/Funciones
+. ${HOME}/.History/Functions/Funciones
 
 array=('Seleccionar Histórico' 'Gestión de Históricos' 'Información' 'Salir')
 opcion=$(zenity --entry --title "MHIST" --text "Seleccione una opción." "${array[@]}")
@@ -9,6 +9,11 @@ if [ "$opcion" == "Seleccionar Histórico" ]; then
     ElegirHistorico
         if [ "$hist" != "" ]; then
             SeleccionarHistorico ${HOME}/.History/Histories/${dir}/${hist}
+            if [ $result == true ]; then
+                zenity --info --text="Histórico del sistema cambiado correctamente"
+            else
+                zenity --error --text="No se ha podido cambiar el histórico del sistema"
+            fi
         else
             zenity --info --text="Operación cancelada."
             . ${HOME}/.History/Scripts/exec
@@ -22,6 +27,4 @@ elif [ "$opcion" == "Información" ]; then
 elif [ "$opcion" == "Salir" ] || [ "$opcion" == "" ]; then
     #Salir
     zenity --info --text="Hasta pronto."
-    #Hay que comprobar si tiene el historico por defecto 
-    #para pedirle al acabar si quiere guardarlo como uno nuevo.
 fi

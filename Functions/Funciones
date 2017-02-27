@@ -1,18 +1,31 @@
 #!/bin/bash 
 
+#Isaac
+#Cambia el histórico del sistema
 function SeleccionarHistorico() {
     fichero=$1
 
     if [ -e $fichero ]; then
+        #Cambiamos la variable de sistema
         HISTFILE=$fichero
+        #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
+        bash
 
-        export HISTFILE
+        if [ $? == 0]; then
+            result=true
+        else
+            result=false
+        fi
     fi
 }
 
+#Sebastián
+#Permite seleccionar un histórico
 function ElegirHistorico() {
+    #Selección del directorio
     dir=`ls ~/.History/Histories | zenity --list --column "Seleccione Directorio"`
     if [ $dir != "" ]; then
+        #Selección del histórico
         hist=`ls ${HOME}/.History/Histories/${dir} | zenity --list --column "Seleccione Histórico"`
     else
         zenity --info --text="Operación cancelada."
@@ -20,18 +33,23 @@ function ElegirHistorico() {
     fi
 }
 
+#Isaac
+#Copia un histórico en una ubicacion comprobando que ese fichero no exista previamente
+#añadiendo un sufijo siendo necesario 
 function GuardarSinRepetir() {
     rutaorigen=$1
     rutadestino=$2
     dir=$(dirname "$rutadestino")
     ficherooriginal=$3
     let count=0
+    #Añade un sufijo numerico al nombre hasta que este nombre no exista en el destino 
     while [ -e $rutadestino ]
     do
         let count=${count}+1
         fichero=${ficherooriginal}"${count}"
         rutadestino="${dir}/${fichero}"
     done
+    #Creacion del nuevo fichero
     cp $rutaorigen $rutadestino
     if [ $? -eq 0 ]; then
         exito=true
@@ -40,41 +58,53 @@ function GuardarSinRepetir() {
     fi
 }
 
+#Josué
+#Crea un nuevoo histórico temporal y lo establece como activo
 function NuevoHistorico(){
-
+    #Crea el temporal
     touch ${HOME}/.History/.Temp/aux.temp
     SeleccionarHistorico ${HOME}/.History/.Temp/aux.temp
+    #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
     bash
 
 }
 
+#Josué
+#Guarda el histórico temporal como uno permanente
 function GuardarHistorico(){
-if [ -e ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` ];then
-      cat ${HOME}/.History/.Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
-      rm ${HOME}/.History/.Temp/aux.temp
-      zenity --info --text "Historico Actualizado!" 
-else
-    zenity --question --text "Guardar?"
-    if [ $? = 0 ];then
-       
-        mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
-        SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%y_%m_%d`
-        zenity --info --text="Historico guardado."
+
+    #Comprueba si ya hay un historico guardado con el mismo nmbre
+    if [ -e ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` ];then
+        #Actualiza el ya existente con los camios de ela sesion actual 
+        cat ${HOME}/.History/.Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+        rm ${HOME}/.History/.Temp/aux.temp 
+        zenity --info --text "Historico Actualizado!"  
     else 
-        rm ${HOME}/.History/.Temp/aux.temp
-        zenity --info --text="Historico descartado."
-    fi
-fi    
+        zenity --question --text "Guardar?" 
+        if [ $? = 0 ];then
+            #Guardamos el nuevo histórico
+            mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+            SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+            zenity --info --text="Historico guardado." 
+        else  
+            rm ${HOME}/.History/.Temp/aux.temp 
+            zenity --info --text="Historico descartado." 
+        fi 
+fi     
 }
 
+#Josué
+#Permite seleccionar diversos históricos de diversas ubicaciones
 function ElegirHistoricos(){
 #Creamos un array asociativo que contenga para cada directorio seleccionado, una lista con los ficheros selecionados a borrar
     dir=`ls ~/.History/Histories | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Acceder?" --column="Directorios" --separator=" "`
     declare -A arrayHistoricos
     set $dir
 
+    #Iteración de los directorios seleccionados
     while [ "$1" != "" ]
-    do
+    do  
+        #Selección de los históricos del directorio
         hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Borrar?" --column="Históricos" --separator=" "`
         arrayHistoricos[$1]="$hist"
         let count=count+1
@@ -89,6 +119,7 @@ function ElegirHistoricos(){
     fi
     
     declare -a array
+    #Conversión de array asociativa a array indexada
     for i in "${!arrayHistoricos[@]}";
     do  
         split=`echo "${arrayHistoricos[$i]}" | tr ' ' ':'`
@@ -98,10 +129,10 @@ function ElegirHistoricos(){
     echo "${array[@]}"
 }
 
-
+#Josué
 #Funcion que permite elegir varios historicos de diferentes directorios y eliminarlos a la vez 
 function EliminarHistoricos() {
-    
+    #COnversión de array indexada a asociativa
     declare -a aux=$(ElegirHistoricos)
     declare -A arrayBuena
 
@@ -120,6 +151,7 @@ function EliminarHistoricos() {
         split=`echo "${arrayBuena[$index]}" | tr ':' ' '`
         ficheros="$split" 
         set $ficheros
+            #Iteración de ficheros del directorio
             while [ "$1" != "" ]
             do  
                 if [ -e ${HOME}/.History/Histories/${directorio}/${1} ];then
@@ -128,9 +160,11 @@ function EliminarHistoricos() {
                 shift
             done    
     done
+
 } 
 
-#Funcion de Fusionar historicos
+#Sebastián
+#Crea un histórico nuevo con el contenido de todos lo ficheros seleccionados
 function FusionarHistoricos(){
     #Seleccion de Historicos
     declare -a aux=$(ElegirHistoricos)
@@ -149,34 +183,64 @@ function FusionarHistoricos(){
     for index in "${!arrayHistoricos[@]}"
     do
         directorio=$index
-        ficheros="${arrayHistoricos[$index]}" 
+        ficheros="${arrayHistoricos[$index]}"
+        #Comprobar si ya existe la fusion 
+        if [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]; then
+            zenity --question --text "Ya existe una fusión, desea añadir el contenido nuevo como un fichero distinto?"
+            if [ $? == 0 ]; then
+                nombrehistorico=$(zenity --entry --title="Establecer nombre" --text="Indique el nombre que desea:") 
+                count=0
+                #Comprobamos que el nombre personalizado existe
+                while [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]
+                do
+                    let count=${count}+1
+                    fichero=${nombrehistorico}"${count}"
+                    rutadestino="${dir}/${fichero}"
+                done
+            fi
+        fi
         set $ficheros
-            while [ $1 != "" ]
-            do
-                cat ${HOME}/.History/Histories/${directorio}/${1} >> "${HOME}/.History/Histories/Dates/$nombrehistorico"
-                shift
-            done    
+        result=true
+        while [ $1 != "" ]
+        do
+            #Añadimos con adición los históricos resultantes en la fusión
+            cat ${HOME}/.History/Histories/${directorio}/${1} >> "${HOME}/.History/Histories/Custom/$nombrehistorico"
+            if [ $? != 0 ]; then
+                result=false
+            fi
+            shift
+        done    
     done
-    zenity --info --text="Historico fusionado correctamente con el nombre $nombrehistorico."
+    #Comprobamos si la extensión de la fusión supera el $HISTSIZE 
+    lineastotales=`wc -l ${HOME}/.History/Histories/$dir/$hist | cut -d' ' -f1`
+    if [ lineastotales -gt $HISTSIZE ]; then
+        zenity --error --text="El histórico resultante superó el limite máximo de longitud"
+    fi
 
 }
 
-#Funcion de Porcentajes
+#Sebastián
+#Muestra el porcentaje que aparece una orden en un histórico
 function PorcentajeOrden(){
-    numderepeticiones=fgrep -o "$1" ${HOME}/.History/Histories/$dir/$hist | wc -l
-    lineastotales=wc ${HOME}/.History/Histories/$dir/$hist
-    multiplicacion=expr $numderepeticiones\*100
-    porcentajetotal=expr $multiplicacion/$lineastotales
-    zenity --info --text="El porcentaje de veces que se repite esta orden es: $porcentajetotal."
+    #Numero de lineas que aparece la orrden
+    numderepeticiones=`fgrep -o "$1" ${HOME}/.History/Histories/$dir/$hist | wc -l`
+    #Lineas del Script
+    lineastotales=`wc -l ${HOME}/.History/Histories/$dir/$hist | cut -d' ' -f1`
+    let multiplicacion=$numderepeticiones\*100
+    porcentajetotal=$(echo "scale=2; ${multiplicacion}/${lineastotales}" | bc)
+    resultado="El porcentaje de veces que se repite la orden ${1} es: ${porcentajetotal}%"
 
 }
-#Funcion para Importar 
+
+#Isaac
+#Funcion para Importar un fichero ajeno como nuevo histórico
 function Importar() {
     rutaorigen=$1
     ficherooriginal=$(basename "$rutaorigen")
     fichero=$ficherooriginal
     rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
 
+    #Comprueba la existencia del origen
     if [ -e $rutaorigen ]; then
         GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
         if [ $exito == true ]; then
@@ -187,6 +251,8 @@ function Importar() {
     fi
 }
 
+#Isaac
+#Exporta un historico a una ubicacion ajena a la utilidad
 function Exportar() {
     dir=$1
     hist=$2
@@ -196,6 +262,7 @@ function Exportar() {
     dirdestino=`zenity --file-selection --directory --filename=${HOME}/ --title="Seleccione Directorio de destino"`
     rutadestino="${dirdestino}/${fichero}"
 
+    #Comprueba la existencia del origen
     if [ -e $rutaorigen ]; then
         GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
         if [ $exito == true ]; then
@@ -206,6 +273,9 @@ function Exportar() {
     fi
 }
 
+#Francisco
+#Muestra una gráfica que indica las repeticiones de aparación (5 diferentes) de las órdenes de un Histórico
+#Varias ordenes con el mismo numero de repeticiones son mostradas en la misma linea 
 function UsodeOrdenes(){
     declare -A reg
     count=1
@@ -267,14 +337,14 @@ function UsodeOrdenes(){
     rm ${HOME}/.History/list.temp
 }
 
-#Borrar archivo temporal
-#| sort -t : -k 1nr
-
+#Isaac
+#Filtra histórico por orden, lo muestra y lo guarda si se desea
 function DesglosarHistorico() {
     dir=$1
     hist=$2
     orden=$3
     ruta="${HOME}/.History/Histories/${dir}/${hist}"
+    #Guardamos en un temporal las lineas de la orden seleccionada
     cat $ruta | grep "${orden}" > ${HOME}/.History/Temp/desglose.temp
     vacio=false
     contador=$(wc -l ${HOME}/.History/Temp/desglose.temp | cut -d' ' -f1)
@@ -288,6 +358,7 @@ function DesglosarHistorico() {
         ficherooriginal=`date +%Y_%m_%d`".${orden}"
         fichero=$ficherooriginal
         rutadestino="${HOME}/.History/Histories/Command/${ficherooriginal}"
+        #Comprueba la existencia del origen
         if [ -e $rutaorigen ]; then
             GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
             if [ $exito == true ]; then

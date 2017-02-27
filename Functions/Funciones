@@ -62,8 +62,8 @@ function GuardarSinRepetir() {
 #Crea un nuevoo histórico temporal y lo establece como activo
 function NuevoHistorico(){
     #Crea el temporal
-    touch ${HOME}/.History/.Temp/aux.temp
-    SeleccionarHistorico ${HOME}/.History/.Temp/aux.temp
+    touch ${HOME}/.History/Temp/aux.temp
+    SeleccionarHistorico ${HOME}/.History/Temp/aux.temp
     #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
     bash
 
@@ -76,18 +76,18 @@ function GuardarHistorico(){
     #Comprueba si ya hay un historico guardado con el mismo nmbre
     if [ -e ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` ];then
         #Actualiza el ya existente con los camios de ela sesion actual 
-        cat ${HOME}/.History/.Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
-        rm ${HOME}/.History/.Temp/aux.temp 
+        cat ${HOME}/.History/Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+        rm ${HOME}/.History/Temp/aux.temp 
         zenity --info --text "Historico Actualizado!"  
     else 
         zenity --question --text "Guardar?" 
         if [ $? = 0 ];then
             #Guardamos el nuevo histórico
-            mv ${HOME}/.History/.Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
             SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
             zenity --info --text="Historico guardado." 
         else  
-            rm ${HOME}/.History/.Temp/aux.temp 
+            rm ${HOME}/.History/Temp/aux.temp 
             zenity --info --text="Historico descartado." 
         fi 
 fi     

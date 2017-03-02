@@ -9,9 +9,7 @@ function SeleccionarHistorico() {
         #Cambiamos la variable de sistema
         HISTFILE=$fichero
         #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
-        bash
-
-        if [ $? == 0]; then
+        if [ $? == 0 ]; then
             result=true
         else
             result=false

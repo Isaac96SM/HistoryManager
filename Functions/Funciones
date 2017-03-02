@@ -193,7 +193,8 @@ function FusionarHistoricos(){
     for index in "${!arrayBuena[@]}"
     do
         directorio=$index
-        ficheros="${arrayBuena[$index]}"
+        split=`echo "${arrayBuena[$index]}" | tr ':' ' '`
+        ficheros="$split" 
         result=true
         set $ficheros
         while [ $1 != "" ]

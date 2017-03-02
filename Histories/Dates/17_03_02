@@ -1,0 +1,5 @@
+mhist
+echo $HISTFILE
+mhist
+date +%Y_%m_%d
+date +%y_%m_%d

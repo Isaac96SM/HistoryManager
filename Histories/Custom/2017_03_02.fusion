@@ -1,4 +1,19 @@
 mhist
+echo $HISTFILE
+mhist
+date +%Y_%m_%d
+date +%y_%m_%d
+dcccdcd
+cd
+cd ~
+cd /
+cd cd
+cd /home
+cd Isaac
+cd isaac
+cd
+git cd
+mhist
 env
 set
 HISTFILE=

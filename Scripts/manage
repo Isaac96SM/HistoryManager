@@ -12,6 +12,11 @@ elif [ "$opcion" == "Guardar Histórico" ]; then
 elif [ "$opcion" == "Eliminar Históricos" ]; then
     #Eiminar Históricos
     EliminarHistoricos
+    if [ $result == true ]; then
+        zenity --info --text="Operación completada"
+    else
+        zenity --info --text="Operación cancelada"
+    fi
 elif [ "$opcion" == "Desglosar Histórico" ]; then
     #Desglosar por orden
     ElegirHistorico
@@ -29,7 +34,7 @@ elif [ "$opcion" == "Fusionar Históricos" ]; then
     #Fusionar Históricos
     FusionarHistoricos
     if [ $result == true ]; then
-        zenity --info --text="Histórico fusionado correctamente con el nombre $nombrehistorico."
+        zenity --info --text="Histórico fusionado correctamente con el nombre $nombrehistorico de $lineastotales lineas."
     else   
         zenity --error --text="El histórico no se creo o se creo parcialmente."
     fi

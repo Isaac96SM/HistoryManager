@@ -63,7 +63,6 @@ function NuevoHistorico(){
     touch ${HOME}/.History/Temp/aux.temp
     SeleccionarHistorico ${HOME}/.History/Temp/aux.temp
     #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
-    bash
 
 }
 
@@ -72,17 +71,17 @@ function NuevoHistorico(){
 function GuardarHistorico(){
 
     #Comprueba si ya hay un historico guardado con el mismo nmbre
-    if [ -e ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` ];then
+    if [ -e ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` ];then
         #Actualiza el ya existente con los camios de ela sesion actual 
-        cat ${HOME}/.History/Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+        cat ${HOME}/.History/Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
         rm ${HOME}/.History/Temp/aux.temp 
         zenity --info --text "Historico Actualizado!"  
     else 
         zenity --question --text "Guardar?" 
         if [ $? = 0 ];then
             #Guardamos el nuevo histórico
-            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
-            SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%y_%m_%d` 
+            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
+            SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
             zenity --info --text="Historico guardado." 
         else  
             rm ${HOME}/.History/Temp/aux.temp 
@@ -103,17 +102,16 @@ function ElegirHistoricos(){
     while [ "$1" != "" ]
     do  
         #Selección de los históricos del directorio
-        hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Borrar?" --column="Históricos" --separator=" "`
+        hist=`ls ~/.History/Histories/${1} | awk '{print "FALSE\n"$0}' | zenity --list --checklist --column="Seleccionar?" --column="Históricos" --separator=" "`
         arrayHistoricos[$1]="$hist"
         let count=count+1
         shift
     done
     #Comprobamos que ha ido bien la seleccion de ficheros
     if [ $? = 0 ]; then
-        zenity --info --text="Operación completada."
+        result=true
     else
-        zenity --info --text="Operación cancelada."
-        . ${HOME}/.History/Scripts/manage
+        result=false
     fi
     
     declare -a array
@@ -178,27 +176,26 @@ function FusionarHistoricos(){
     #Establecemos nombre al fichero
     nombrehistorico=`date +%Y_%m_%d`".fusion" 
     #Bucle para fusionar los historicos que hemos definido de cada directorio
-    for index in "${!arrayHistoricos[@]}"
+    #Comprobar si ya existe la fusion 
+    if [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]; then
+        zenity --question --text "Ya existe una fusión, desea añadir el contenido nuevo como un fichero distinto?"
+        if [ $? == 0 ]; then
+            nombrehistorico=$(zenity --entry --title="Establecer nombre" --text="Indique el nombre que desea:") 
+            count=0
+            #Comprobamos que el nombre personalizado existe
+            while [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]
+            do
+                let count=${count}+1
+                nombrehistorico=${nombrehistorico}"${count}"    
+            done
+        fi
+    fi
+    for index in "${!arrayBuena[@]}"
     do
         directorio=$index
-        ficheros="${arrayHistoricos[$index]}"
-        #Comprobar si ya existe la fusion 
-        if [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]; then
-            zenity --question --text "Ya existe una fusión, desea añadir el contenido nuevo como un fichero distinto?"
-            if [ $? == 0 ]; then
-                nombrehistorico=$(zenity --entry --title="Establecer nombre" --text="Indique el nombre que desea:") 
-                count=0
-                #Comprobamos que el nombre personalizado existe
-                while [ -e ${HOME}/.History/Histories/Custom/$nombrehistorico ]
-                do
-                    let count=${count}+1
-                    fichero=${nombrehistorico}"${count}"
-                    rutadestino="${dir}/${fichero}"
-                done
-            fi
-        fi
-        set $ficheros
+        ficheros="${arrayBuena[$index]}"
         result=true
+        set $ficheros
         while [ $1 != "" ]
         do
             #Añadimos con adición los históricos resultantes en la fusión
@@ -210,7 +207,7 @@ function FusionarHistoricos(){
         done    
     done
     #Comprobamos si la extensión de la fusión supera el $HISTSIZE 
-    lineastotales=`wc -l ${HOME}/.History/Histories/$dir/$hist | cut -d' ' -f1`
+    lineastotales=`wc -l ${HOME}/.History/Histories/Custom/$nombrehistorico | cut -d' ' -f1`
     if [ lineastotales -gt $HISTSIZE ]; then
         zenity --error --text="El histórico resultante superó el limite máximo de longitud"
     fi

@@ -56,7 +56,11 @@ function GuardarSinRepetir() {
     fi
 }
 
+#Isaac
+#Abre un bash hijo que carga las flechas del historico
 function CargarFlechas() {
+    #Hay que editar el .bashrc añadiendo un if que mire si $rutaactual esta vacia
+    #en caso de que no este vacia hacer un cd del valor para mantener el directorio activo
     rutaactual=`pwd`
     export rutaactual
     bash
@@ -244,11 +248,16 @@ function Importar() {
 
     #Comprueba la existencia del origen
     if [ -e $rutaorigen ]; then
-        GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
-        if [ $exito == true ]; then
-            resultado="Fichero importado al directorio ${dir} con el nombre: ${fichero}"
+        tipo=`file $filetype | cut -f2 -d' '`
+        if [ "$tipo"="ASCII" ]; then
+            GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
+            if [ $exito == true ]; then
+                resultado="Fichero importado al directorio ${dir} con el nombre: ${fichero}"
+            else
+                resultado='Algo salio mal y no se pudo realizar la importación'
+            fi
         else
-            resultado='Algo salio mal y no se pudo realizar la importación'
+            resultado='El fichero ${rutadestino} no es un fichero valido'
         fi
     fi
 }

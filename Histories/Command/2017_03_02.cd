@@ -11,3 +11,7 @@ exit
 clear
 orden
 exit
+mhist
+cd HistoryManager/
+clear
+mhist

@@ -105,3 +105,8 @@ cd Isaac
 cd isaac
 cd
 git cd
+mhist
+ls
+cd
+mhist
+exit

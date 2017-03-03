@@ -8,6 +8,7 @@ function SeleccionarHistorico() {
     if [ -e $fichero ]; then
         #Cambiamos la variable de sistema
         HISTFILE=$fichero
+        #. ${HOME}/.bash_rc
         #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
         if [ $? == 0 ]; then
             result=true
@@ -35,6 +36,7 @@ function ElegirHistorico() {
 #Copia un histórico en una ubicacion comprobando que ese fichero no exista previamente
 #añadiendo un sufijo siendo necesario 
 function GuardarSinRepetir() {
+    exito=false
     rutaorigen=$1
     rutadestino=$2
     dir=$(dirname "$rutadestino")
@@ -51,8 +53,6 @@ function GuardarSinRepetir() {
     cp $rutaorigen $rutadestino
     if [ $? -eq 0 ]; then
         exito=true
-    else
-        exito=false
     fi
 }
 

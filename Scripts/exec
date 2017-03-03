@@ -4,9 +4,9 @@
 array=('Seleccionar Histórico' 'Gestión de Históricos' 'Información' 'Salir')
 opcion=$(zenity --entry --title "MHIST" --text "Seleccione una opción." "${array[@]}")
 
-if [ "$opcion" == "Seleccionar Histórico" ]; then
-    #Cambiar HISTFILE
-    ElegirHistorico
+case $opcion in
+    'Seleccionar Histórico')
+        ElegirHistorico
         if [ "$hist" != "" ]; then
             SeleccionarHistorico ${HOME}/.History/Histories/${dir}/${hist}
             if [ $result == true ]; then
@@ -18,13 +18,14 @@ if [ "$opcion" == "Seleccionar Histórico" ]; then
             zenity --info --text="Operación cancelada."
             . ${HOME}/.History/Scripts/exec
         fi
-elif [ "$opcion" == "Gestión de Históricos" ]; then
-    #Gestión históricos
-    . ${HOME}/.History/Scripts/manage
-elif [ "$opcion" == "Información" ]; then
-    #Estadísticas
-    . ${HOME}/.History/Scripts/info
-elif [ "$opcion" == "Salir" ] || [ "$opcion" == "" ]; then
-    #Salir
-    zenity --info --text="Hasta pronto."
-fi
+        ;;
+    'Gestión de Históricos')
+        . ${HOME}/.History/Scripts/manage
+        ;;
+    'Información')
+        . ${HOME}/.History/Scripts/info
+        ;;
+    *)
+        zenity --info --text="Hasta pronto."
+        ;;
+esac

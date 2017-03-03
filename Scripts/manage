@@ -3,23 +3,27 @@
 array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
 opcion=$(zenity --entry --title "Gestión de Históricos" --text "Seleccione una opción." "${array[@]}")
 
-if [ "$opcion" == "Nuevo Histórico" ]; then
-    #Nuevo Histórico
-    NuevoHistorico
-elif [ "$opcion" == "Guardar Histórico" ]; then
-    #Guardar Histórico activo (solo si no esta guardado ya)
-    GuardarHistorico
-elif [ "$opcion" == "Eliminar Históricos" ]; then
-    #Eiminar Históricos
-    EliminarHistoricos
-    if [ $result == true ]; then
-        zenity --info --text="Operación completada"
-    else
-        zenity --info --text="Operación cancelada"
-    fi
-elif [ "$opcion" == "Desglosar Histórico" ]; then
-    #Desglosar por orden
-    ElegirHistorico
+case $opcion in
+    'Nuevo Histórico')
+        #Nuevo Histórico
+        NuevoHistorico
+        ;;
+    'Guardar Histórico')
+        #Guardar Histórico activo (solo si no esta guardado ya)
+        GuardarHistorico
+        ;;
+    'Eliminar Históricos')
+        #Eiminar Históricos
+        EliminarHistoricos
+        if [ $result == true ]; then
+            zenity --info --text="Operación completada"
+        else
+            zenity --info --text="Operación cancelada"
+        fi
+        ;;
+    'Desglosar Histórico')
+        #Desglosar por orden
+        ElegirHistorico
         if [ $hist != "" ]; then
             orden=$(zenity --entry --title="Desglosar histórico" --text="Escriba la orden que desea buscar:")
             if [ $orden != "" ]; then
@@ -30,36 +34,44 @@ elif [ "$opcion" == "Desglosar Histórico" ]; then
                 --text="No se ha especificado ninguna orden"
             fi
         fi
-elif [ "$opcion" == "Fusionar Históricos" ]; then
-    #Fusionar Históricos
-    FusionarHistoricos
-    if [ $result == true ]; then
-        zenity --info --text="Histórico fusionado correctamente con el nombre $nombrehistorico de $lineastotales lineas."
-    else   
-        zenity --error --text="El histórico no se creo o se creo parcialmente."
-    fi
-elif [ "$opcion" == "Importar/Exportar" ]; then
-    #Importar/Exportar
-    opcion=$(zenity --entry --title "Importar/Exportar" --text "Que acción desea realizar" "Importar" "Exportar")
-    if [ "$opcion" == "Importar" ]; then
-        #Importar
-        hist=`zenity --file-selection --filename=${HOME}/ --title="Seleccione Histórico"`
-        if [ $hist != "" ]; then
-            Importar $hist
-            zenity --info --text="${resultado}"
+        ;;
+    'Fusionar Históricos')
+        #Fusionar Históricos
+        FusionarHistoricos
+        if [ $result == true ]; then
+            zenity --info --text="Histórico fusionado correctamente con el nombre $nombrehistorico de $lineastotales lineas."
+        else   
+            zenity --error --text="El histórico no se creo o se creo parcialmente."
         fi
-    elif [ "$opcion" == "Exportar" ]; then
-        #Exportar
-        ElegirHistorico
-        if [ $hist != "" ]; then
-            Exportar $dir $hist
-            zenity --info --text="${resultado}"
-        fi
-    else
+        ;;
+    'Importar/Exportar')
+        #Importar/Exportar
+        opcion=$(zenity --entry --title "Importar/Exportar" --text "Que acción desea realizar" "Importar" "Exportar")
+        case $opcion in
+            'Importar')
+                #Importar
+                hist=`zenity --file-selection --filename=${HOME}/ --title="Seleccione Histórico"`
+                if [ $hist != "" ]; then
+                    Importar $hist
+                    zenity --info --text="${resultado}"
+                fi
+                ;;
+            'Exportar')
+                #Exportar
+                ElegirHistorico
+                if [ $hist != "" ]; then
+                    Exportar $dir $hist
+                    zenity --info --text="${resultado}"
+                fi
+                ;;
+            *)
+                #Volver al menú principal
+                . ${HOME}/.History/Scripts/exec
+                ;;
+            esac
+        ;;
+    *)
         #Volver al menú principal
-    . ${HOME}/.History/Scripts/exec
-    fi
-elif [ "$opcion" == "Volver" ] || [ "$opcion" == "" ]; then
-    #Volver al menú principal
-    . ${HOME}/.History/Scripts/exec
-fi
+        . ${HOME}/.History/Scripts/exec
+        ;;
+esac

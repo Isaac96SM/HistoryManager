@@ -3,19 +3,20 @@
 array=('Ordenes mas utilizadas' 'Porcentaje de órden' 'Volver')
 opcion=$(zenity --entry --title "Información de Históricos" --text "Seleccione una opción." "${array[@]}")
 
-if [ "$opcion" == "Ordenes mas utilizadas" ]; then
-    #Uso de Ordenes
-    ElegirHistorico
-    if [ $hist != "" ]; then
-    UsodeOrdenes ${HOME}/.History/Histories/${dir}/${hist}
-	else
-    zenity --info --text="Operación cancelada."
-    . ${HOME}/.History/Scripts/info
-fi
-
-elif [ "$opcion" == "Porcentaje de órden" ]; then
-    #Porcentaje
-    ElegirHistorico
+case $opcion in
+    'Ordenes mas utilizadas')
+        #Uso de Ordenes
+        ElegirHistorico
+        if [ $hist != "" ]; then
+            UsodeOrdenes ${HOME}/.History/Histories/${dir}/${hist}
+        else
+            zenity --info --text="Operación cancelada."
+            . ${HOME}/.History/Scripts/info
+        fi
+        ;;
+    'Porcentaje de órden')
+        #Porcentaje
+        ElegirHistorico
         if [ $hist != "" ]; then
             orden=$(zenity --entry --title="Porcentaje histórico" --text="Escriba la orden que desea buscar:")
             if [ $orden != "" ]; then
@@ -26,7 +27,9 @@ elif [ "$opcion" == "Porcentaje de órden" ]; then
                 --text="No se ha especificado ninguna orden"
             fi
         fi
-elif [ "$opcion" == "Volver" ] || [ "$opcion" == "" ]; then
-    #Volver al menú principal
-    . ${HOME}/.History/Scripts/exec
-fi
+        ;;
+    *)
+        #Volver al menú principal
+        . ${HOME}/.History/Scripts/exec
+        ;;
+esac

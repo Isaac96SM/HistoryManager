@@ -11,6 +11,7 @@ case $opcion in
             SeleccionarHistorico ${HOME}/.History/Histories/${dir}/${hist}
             if [ $result == true ]; then
                 zenity --info --text="Histórico del sistema cambiado correctamente"
+                CargarFlechas
             else
                 zenity --error --text="No se ha podido cambiar el histórico del sistema"
             fi

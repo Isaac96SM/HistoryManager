@@ -8,7 +8,7 @@ function SeleccionarHistorico() {
     if [ -e $fichero ]; then
         #Cambiamos la variable de sistema
         HISTFILE=$fichero
-        #. ${HOME}/.bash_rc
+        export HISTFILE
         #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
         if [ $? == 0 ]; then
             result=true
@@ -56,6 +56,12 @@ function GuardarSinRepetir() {
     fi
 }
 
+function CargarFlechas() {
+    rutaactual=`pwd`
+    export rutaactual
+    bash
+}
+
 #Josué
 #Crea un nuevoo histórico temporal y lo establece como activo
 function NuevoHistorico(){
@@ -63,7 +69,7 @@ function NuevoHistorico(){
     touch ${HOME}/.History/Temp/aux.temp
     SeleccionarHistorico ${HOME}/.History/Temp/aux.temp
     #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
-
+    CargarFlechas
 }
 
 #Josué

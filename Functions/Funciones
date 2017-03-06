@@ -285,7 +285,7 @@ function Exportar() {
 }
 
 #Francisco
-#Muestra una gráfica que indica las repeticiones de aparación (5 diferentes) de las órdenes de un Histórico
+#Muestra una gráfica que indica las repeticiones de aparación de las órdenes de un Histórico
 #Varias ordenes con el mismo numero de repeticiones son mostradas en la misma linea 
 function UsodeOrdenes(){
     declare -A reg
@@ -296,7 +296,7 @@ function UsodeOrdenes(){
         check=false
         linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
 
-        for registro in "${!reg[@]}"; do #Comprar si la linea actual ya esta en el array !:Clave del registro
+        for registro in "${!reg[@]}"; do #Comparar si la linea actual ya esta en el array !:Clave del registro
             if [[ $registro == $linea ]]; then
                 check=true
             fi
@@ -322,7 +322,7 @@ function UsodeOrdenes(){
         numero=$(echo "$line" | cut -d':' -f2)
 
         if [[ $numero == $old ]]; then #Tratar la orden y su valor y meterla en un array.     
-            oldord="$oldord $orden"
+            oldord="$oldord, $orden"
             grupos["${numero}"]="$oldord"
         else
             old=${numero}
@@ -343,14 +343,20 @@ function UsodeOrdenes(){
         done
 
         echo "$i ${grupos[$i]}: $bar" >> ${HOME}/.History/result.temp
-    done | sort -k 1nr
-    zenity --text-info \
+        #printf "" $i ${grupos[$i]} ":" $bar >> ${HOME}/.History/result.temp
+
+        sort ${HOME}/.History/result.temp -k 1nr > ${HOME}/.History/zenityresult.temp
+    done
+
+        zenity --text-info \
     --title="Uso de Ordenes" \
-    --filename=${HOME}/.History/result.temp \
+    --filename=${HOME}/.History/zenityresult.temp \
 
     rm ${HOME}/.History/list.temp
     rm ${HOME}/.History/result.temp
+    rm ${HOME}/.History/zenityresult.temp
 }
+
 
 #Isaac
 #Filtra histórico por orden, lo muestra y lo guarda si se desea

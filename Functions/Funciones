@@ -70,8 +70,19 @@ function CargarFlechas() {
 #Crea un nuevoo histórico temporal y lo establece como activo
 function NuevoHistorico(){
     #Crea el temporal
-    touch ${HOME}/.History/Temp/aux.temp
-    SeleccionarHistorico ${HOME}/.History/Temp/aux.temp
+    file=${HOME}/.History/Histories/Dates/`date +%Y_%m_%d`
+
+    if [ -e $file ]; then
+        zenity --question --text "Ya existe un historico de hoy, deseas utilizarlo?"
+        if [ $? != 0 ]; then
+            nombrehistorico=$(zenity --entry --title="Establecer nombre" --text="Indique el nombre que desea:")
+            file=${HOME}/.History/Histories/Custom/${nombrehistorico}
+            touch $file
+        fi
+    else
+        touch $file
+    fi
+    SeleccionarHistorico $file
     #Hay que ejecutar un exit desde la terminal antes de guardar el histórico (temporal)
     CargarFlechas
 }
@@ -90,8 +101,8 @@ function GuardarHistorico(){
         zenity --question --text "Guardar?" 
         if [ $? = 0 ];then
             #Guardamos el nuevo histórico
-            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
-            SeleccionarHistorico ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
+            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d`
+            HISTFILE=${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
             zenity --info --text="Historico guardado." 
         else  
             rm ${HOME}/.History/Temp/aux.temp 

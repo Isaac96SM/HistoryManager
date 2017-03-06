@@ -1,0 +1,27 @@
+git clone https://github.com/xybu92/onedrive-d.git
+git init
+git add README.md
+git commit -m "first commit"
+git config --global user.email "suarezmota@gmail.com"
+git config --global user.name "Isaac"
+git commit -m "first commit"
+git remote add origin git@github.com:Isaac96SM/HistoryManager.git
+git push -u origin master
+git status
+git push
+git checkout master
+git merge --squash Isaac
+git push
+git checkout Fran
+git merge master
+git checkout master
+git pull
+git status
+git checkout master
+git merge --squash Isaac
+git checkout Fran
+git pull
+git checkout Fran
+git pull
+git checkout Fran
+git pull

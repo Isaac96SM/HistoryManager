@@ -2,3 +2,7 @@ mhist
 clear
 la
 mhist
+cd ..
+vi
+echo $SHLVL
+mkdir prueba

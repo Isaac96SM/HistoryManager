@@ -1,0 +1,6 @@
+clear
+ls
+clear
+ls
+guardar
+echo $SHLVL

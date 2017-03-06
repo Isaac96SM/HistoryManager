@@ -7,11 +7,4 @@ cd /home
 cd Isaac
 cd isaac
 cd
-exit
-clear
-orden
-exit
-mhist
-cd HistoryManager/
-clear
-mhist
+

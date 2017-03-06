@@ -1,16 +1,12 @@
 #!/bin/bash 
 
-array=('Nuevo Histórico' 'Guardar Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
+array=('Nuevo Histórico' 'Eliminar Históricos' 'Desglosar Histórico' 'Fusionar Históricos' 'Importar/Exportar' 'Volver')
 opcion=$(zenity --entry --title "Gestión de Históricos" --text "Seleccione una opción." "${array[@]}")
 
 case $opcion in
     'Nuevo Histórico')
         #Nuevo Histórico
         NuevoHistorico
-        ;;
-    'Guardar Histórico')
-        #Guardar Histórico activo (solo si no esta guardado ya)
-        GuardarHistorico
         ;;
     'Eliminar Históricos')
         #Eiminar Históricos
@@ -51,8 +47,8 @@ case $opcion in
             'Importar')
                 #Importar
                 hist=`zenity --file-selection --filename=${HOME}/ --title="Seleccione Histórico"`
-                if [ $hist != "" ]; then
-                    Importar $hist
+                if [ "$hist" != "" ]; then
+                    Importar "$hist"
                     zenity --info --text="${resultado}"
                 fi
                 ;;
@@ -60,7 +56,7 @@ case $opcion in
                 #Exportar
                 ElegirHistorico
                 if [ $hist != "" ]; then
-                    Exportar $dir $hist
+                    Exportar $dir "$hist"
                     zenity --info --text="${resultado}"
                 fi
                 ;;

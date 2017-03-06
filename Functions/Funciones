@@ -37,21 +37,21 @@ function ElegirHistorico() {
 #añadiendo un sufijo siendo necesario 
 function GuardarSinRepetir() {
     exito=false
-    rutaorigen=$1
-    rutadestino=$2
+    rutaorigen="$1"
+    rutadestino="$2"
     dir=$(dirname "$rutadestino")
-    ficherooriginal=$3
+    ficherooriginal="$3"
     let count=0
     #Añade un sufijo numerico al nombre hasta que este nombre no exista en el destino 
-    while [ -e $rutadestino ]
+    while [ -e "$rutadestino" ]
     do
         let count=${count}+1
-        fichero=${ficherooriginal}"${count}"
+        fichero="${ficherooriginal}${count}"
         rutadestino="${dir}/${fichero}"
     done
     #Creacion del nuevo fichero
-    cp $rutaorigen $rutadestino
-    if [ $? -eq 0 ]; then
+    cp "$rutaorigen" "$rutadestino"
+    if [ $? = 0 ]; then
         exito=true
     fi
 }
@@ -67,7 +67,7 @@ function CargarFlechas() {
 }
 
 #Josué
-#Crea un nuevoo histórico temporal y lo establece como activo
+#Crea un nuevo histórico y lo establece como activo
 function NuevoHistorico(){
     #Crea el temporal
     file=${HOME}/.History/Histories/Dates/`date +%Y_%m_%d`
@@ -91,24 +91,12 @@ function NuevoHistorico(){
 #Guarda el histórico temporal como uno permanente
 function GuardarHistorico(){
 
-    #Comprueba si ya hay un historico guardado con el mismo nmbre
-    if [ -e ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` ];then
-        #Actualiza el ya existente con los camios de ela sesion actual 
-        cat ${HOME}/.History/Temp/aux.temp>>${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
-        rm ${HOME}/.History/Temp/aux.temp 
+    #Comprueba si ya hay un historico guardado con el mismo nombre
+    if [ -e $HISTFILE ];then
+        #Actualiza el ya existente con los cambios de la sesion actual
+        #funcion para mostrar mensaje al usuario relamente se hace un exit desde bashrc
         zenity --info --text "Historico Actualizado!"  
-    else 
-        zenity --question --text "Guardar?" 
-        if [ $? = 0 ];then
-            #Guardamos el nuevo histórico
-            mv ${HOME}/.History/Temp/aux.temp ${HOME}/.History/Histories/Dates/`date +%Y_%m_%d`
-            HISTFILE=${HOME}/.History/Histories/Dates/`date +%Y_%m_%d` 
-            zenity --info --text="Historico guardado." 
-        else  
-            rm ${HOME}/.History/Temp/aux.temp 
-            zenity --info --text="Historico descartado." 
-        fi 
-fi     
+    fi
 }
 
 #Josué
@@ -252,16 +240,17 @@ function PorcentajeOrden(){
 #Isaac
 #Funcion para Importar un fichero ajeno como nuevo histórico
 function Importar() {
-    rutaorigen=$1
+    rutaorigen="$1"
     ficherooriginal=$(basename "$rutaorigen")
-    fichero=$ficherooriginal
+    fichero="$ficherooriginal"
     rutadestino="${HOME}/.History/Histories/Custom/${fichero}"
 
     #Comprueba la existencia del origen
-    if [ -e $rutaorigen ]; then
-        tipo=`file $filetype | cut -f2 -d' '`
-        if [ "$tipo"="ASCII" ]; then
-            GuardarSinRepetir $rutaorigen $rutadestino $ficherooriginal
+    if [ -e "$rutaorigen" ]; then
+        cp "${rutadestino}" 
+        tipo=`file "$rutadestino" | cut -f2 -d' '`
+        if [ "$tipo" == "ASCII" ]; then
+            GuardarSinRepetir "$rutaorigen" "$rutadestin" "$ficherooriginal"
             if [ $exito == true ]; then
                 resultado="Fichero importado al directorio ${dir} con el nombre: ${fichero}"
             else
@@ -296,7 +285,7 @@ function Exportar() {
 }
 
 #Francisco
-#Muestra una gráfica que indica las repeticiones de aparación de las órdenes de un Histórico
+#Muestra una gráfica que indica las repeticiones de aparación (5 diferentes) de las órdenes de un Histórico
 #Varias ordenes con el mismo numero de repeticiones son mostradas en la misma linea 
 function UsodeOrdenes(){
     declare -A reg
@@ -307,7 +296,7 @@ function UsodeOrdenes(){
         check=false
         linea=$(awk "NR==$count" $1 | cut -d' ' -f1)
 
-        for registro in "${!reg[@]}"; do #Comparar si la linea actual ya esta en el array !:Clave del registro
+        for registro in "${!reg[@]}"; do #Comprar si la linea actual ya esta en el array !:Clave del registro
             if [[ $registro == $linea ]]; then
                 check=true
             fi
@@ -333,7 +322,7 @@ function UsodeOrdenes(){
         numero=$(echo "$line" | cut -d':' -f2)
 
         if [[ $numero == $old ]]; then #Tratar la orden y su valor y meterla en un array.     
-            oldord="$oldord, $orden"
+            oldord="$oldord $orden"
             grupos["${numero}"]="$oldord"
         else
             old=${numero}
@@ -354,20 +343,14 @@ function UsodeOrdenes(){
         done
 
         echo "$i ${grupos[$i]}: $bar" >> ${HOME}/.History/result.temp
-        #printf "" $i ${grupos[$i]} ":" $bar >> ${HOME}/.History/result.temp
-
-        sort ${HOME}/.History/result.temp -k 1nr > ${HOME}/.History/zenityresult.temp
-    done
-
-        zenity --text-info \
+    done | sort -k 1nr
+    zenity --text-info \
     --title="Uso de Ordenes" \
-    --filename=${HOME}/.History/zenityresult.temp \
+    --filename=${HOME}/.History/result.temp \
 
     rm ${HOME}/.History/list.temp
     rm ${HOME}/.History/result.temp
-    rm ${HOME}/.History/zenityresult.temp
 }
-
 
 #Isaac
 #Filtra histórico por orden, lo muestra y lo guarda si se desea
